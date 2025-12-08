@@ -1,0 +1,140 @@
+.hero {
+  background-color: #F5F5F3;
+  padding: 4rem 2rem;
+  color: #121212;
+}
+
+.hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.hero-content {
+  animation: fadeInLeft 0.8s ease-out;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  color: #121212;
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: #121212;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+}
+
+.cta-button {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 2px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cta-button.primary {
+  background-color: #FF5030;
+  color: #F5F5F3;
+}
+
+.cta-button.primary:hover {
+  background-color: #cc4026;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 80, 48, 0.3);
+}
+
+.cta-button.secondary {
+  background-color: transparent;
+  color: #121212;
+  border: 2px solid #121212;
+}
+
+.cta-button.secondary:hover {
+  background-color: #121212;
+  color: #F5F5F3;
+  transform: translateY(-2px);
+}
+
+.hero-visual {
+  animation: fadeInRight 0.8s ease-out;
+}
+
+.visual-placeholder {
+  background: #ffffff;
+  border-radius: 2px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(255, 80, 48, 0.1);
+  border: 1px solid rgba(18, 18, 18, 0.1);
+}
+
+.visual-placeholder img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 2px;
+}
+
+.visual-placeholder svg {
+  width: 100%;
+  height: auto;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+  }
+
+  .cta-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,92 @@
+.features-section {
+  padding: 4rem 0;
+  background: #F5F5F3;
+  overflow: hidden;
+}
+
+.scroll-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 2rem;
+}
+
+.scroll-row {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+.scroll-content {
+  display: flex;
+  gap: 2rem;
+  width: fit-content;
+}
+
+/* Scroll left to right animation */
+.scroll-left .scroll-content {
+  animation: scrollLeft 27s linear infinite;
+}
+
+/* Scroll right to left animation */
+.scroll-right .scroll-content {
+  animation: scrollRight 27s linear infinite;
+}
+
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.cv-card {
+  min-width: 240px;
+  height: 320px;
+  background: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(18, 18, 18, 0.1);
+  border: 2px solid rgba(255, 80, 48, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #121212;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.cv-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(255, 80, 48, 0.2);
+  border-color: #FF5030;
+}
+
+/* Pause animation on hover */
+.scroll-row:hover .scroll-content {
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .scroll-container {
+    padding: 0 1rem;
+  }
+
+  .cv-card {
+    min-width: 200px;
+    height: 280px;
+  }
+}
