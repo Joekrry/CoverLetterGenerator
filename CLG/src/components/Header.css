@@ -1,3 +1,24 @@
+/* Menu button */
+.menu-btn {
+  background: none;
+  border: none;
+  color: #121212;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.menu-btn:hover {
+  background: rgba(18, 18, 18, 0.1);
+  color: #FF5030;
+}
+
 /* Login button in nav bar */
 .login-btn {
   background-color: #FF5030;

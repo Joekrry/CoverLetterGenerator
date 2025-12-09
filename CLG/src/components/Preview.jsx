@@ -1,24 +1,103 @@
+import { useState, useRef } from 'react';
 import './Preview.css';
+import { generatePDFFromElement } from '../services/pdfService';
+import { generateDOCXFromContent } from '../services/docxService';
 
-const Preview = ({ coverLetter, isGenerating }) => {
-  const formatDate = () => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date().toLocaleDateString('en-GB', options);
+const Preview = ({ 
+  coverLetter, 
+  streamingContent, 
+  isGenerating, 
+  error,
+}) => {
+  const previewContentRef = useRef(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isGeneratingDOCX, setIsGeneratingDOCX] = useState(false);
+
+  const handleSavePDF = async () => {
+    const displayContent = streamingContent || coverLetter?.content || '';
+    
+    if (!displayContent) {
+      alert('Please generate a cover letter first');
+      return;
+    }
+
+    if (!previewContentRef.current) {
+      alert('Preview content not found. Please try again.');
+      return;
+    }
+
+    try {
+      setIsGeneratingPDF(true);
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `cover-letter-${timestamp}.pdf`;
+      
+      // Generate PDF from the preview content element
+      await generatePDFFromElement(previewContentRef.current, filename, {
+        format: 'a4',
+        orientation: 'portrait',
+        margin: 20,
+      });
+      
+      setIsGeneratingPDF(false);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert(err.message || 'Failed to generate PDF. Please try again.');
+      setIsGeneratingPDF(false);
+    }
   };
 
-  const handleSavePDF = () => {
-    //Call API to generate PDF
-    console.log('Save as PDF - Backend integration needed');
-    alert('PDF export will be implemented by the backend API');
+  const handleSaveDOCX = async () => {
+    const displayContent = streamingContent || coverLetter?.content || '';
+    
+    if (!displayContent) {
+      alert('Please generate a cover letter first');
+      return;
+    }
+
+    try {
+      setIsGeneratingDOCX(true);
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `cover-letter-${timestamp}.docx`;
+      
+      // Generate DOCX from the content
+      await generateDOCXFromContent(displayContent, filename, {
+        includeDate: false,
+        includeSignature: true,
+      });
+      
+      setIsGeneratingDOCX(false);
+    } catch (err) {
+      console.error('DOCX generation error:', err);
+      alert(err.message || 'Failed to generate DOCX. Please try again.');
+      setIsGeneratingDOCX(false);
+    }
   };
 
-  const handleSaveDOCX = () => {
-    //Call API to generate DOCX
-    console.log('Save as DOCX - Backend integration needed');
-    alert('DOCX export will be implemented by the backend API');
-  };
+  // Show error state
+  if (error) {
+    return (
+      <section className="preview-section">
+        <div className="preview-container">
+          <div className="preview-error">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3>Error Generating Cover Letter</h3>
+            <p>{error.message || 'An error occurred while generating your cover letter. Please try again.'}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-  if (!coverLetter && !isGenerating) {
+  // Show empty state
+  if (!coverLetter && !isGenerating && !streamingContent) {
     return (
       <section className="preview-section">
         <div className="preview-container">
@@ -38,19 +117,8 @@ const Preview = ({ coverLetter, isGenerating }) => {
     );
   }
 
-  if (isGenerating) {
-    return (
-      <section className="preview-section">
-        <div className="preview-container">
-          <div className="preview-loading">
-            <div className="loader"></div>
-            <h3>Generating your cover letter...</h3>
-            <p>This will only take a moment</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Use streaming content if available, otherwise use coverLetter content
+  const displayContent = streamingContent || coverLetter?.content || '';
 
   return (
     <section className="preview-section">
@@ -58,60 +126,79 @@ const Preview = ({ coverLetter, isGenerating }) => {
         <div className="preview-header">
           <h2>Preview</h2>
           <div className="preview-actions">
-            <button className="action-btn" onClick={handleSaveDOCX}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              Save as DOCX
+            <button 
+              className="action-btn" 
+              onClick={handleSaveDOCX}
+              disabled={isGeneratingDOCX || !displayContent}
+            >
+              {isGeneratingDOCX ? (
+                <>
+                  <div className="mini-loader"></div>
+                  Generating DOCX...
+                </>
+              ) : (
+                <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  Save as DOCX
+                </>
+              )}
             </button>
-            <button className="action-btn" onClick={handleSavePDF}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-              </svg>
-              Save as PDF
+            <button 
+              className="action-btn" 
+              onClick={handleSavePDF}
+              disabled={isGeneratingPDF || !displayContent}
+            >
+              {isGeneratingPDF ? (
+                <>
+                  <div className="mini-loader"></div>
+                  Generating PDF...
+                </>
+              ) : (
+                <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                  Save as PDF
+                </>
+              )}
             </button>
           </div>
         </div>
         
-        <div className="preview-content">
-          <div className="letter-header">
-            {coverLetter.personalInfo && (
-              <div className="sender-info">
-                <p className="name">{coverLetter.personalInfo.fullName}</p>
-                {coverLetter.personalInfo.address && <p>{coverLetter.personalInfo.address}</p>}
-                {coverLetter.personalInfo.email && <p>{coverLetter.personalInfo.email}</p>}
-                {coverLetter.personalInfo.phone && <p>{coverLetter.personalInfo.phone}</p>}
-              </div>
-            )}
-            
-            <p className="date">{formatDate()}</p>
-            
-            {coverLetter.jobDetails && (
-              <div className="recipient-info">
-                {coverLetter.jobDetails.hiringManager && (
-                  <p className="recipient-name">{coverLetter.jobDetails.hiringManager}</p>
-                )}
-                <p className="company-name">{coverLetter.jobDetails.companyName}</p>
-              </div>
-            )}
-          </div>
-
+        <div className="preview-content" ref={previewContentRef}>
           <div className="letter-body">
-            {coverLetter.content && (
-              <div className="letter-text" dangerouslySetInnerHTML={{ __html: coverLetter.content.replace(/\n/g, '<br/>') }} />
+            {displayContent ? (
+              <div className="letter-text">
+                {displayContent.split('\n').map((line, index) => (
+                  <span key={index}>
+                    {line}
+                    {index < displayContent.split('\n').length - 1 && <br />}
+                  </span>
+                ))}
+                {isGenerating && <span className="streaming-cursor">|</span>}
+              </div>
+            ) : (
+              <div className="preview-loading">
+                <div className="loader"></div>
+                <h3>Generating your cover letter...</h3>
+                <p>This will only take a moment</p>
+              </div>
             )}
           </div>
 
-          <div className="letter-footer">
-            <p>Sincerely,</p>
-            <p className="signature">{coverLetter.personalInfo?.fullName}</p>
-          </div>
+          {displayContent && (
+            <div className="letter-footer">
+              <p>Sincerely,</p>
+            </div>
+          )}
         </div>
       </div>
     </section>

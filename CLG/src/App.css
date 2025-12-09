@@ -78,3 +78,8 @@ a:focus {
     margin: 1rem;
   }
 }
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open {
+  overflow: hidden;
+}

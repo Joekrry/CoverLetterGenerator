@@ -3,31 +3,22 @@ import './CoverLetterForm.css';
 
 const CoverLetterForm = ({ onGenerate, isGenerating }) => {
   const [formData, setFormData] = useState({
-    // Personal Information
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
+    // Required fields
+    jobRequirements: '', // Job description and requirements
+    humanScale: 7, // Default to 7/10 (balanced professional and conversational)
     
-    // Job Details
-    jobTitle: '',
-    companyName: '',
-    hiringManager: '',
-    
-    // Additional Context
-    skills: '',
-    experience: '',
-    jobDescription: '',
+    // Optional fields
+    optionalInfo: '', // Additional information for the AI
   });
 
   const [uploadedCV, setUploadedCV] = useState(null);
   const [isProcessingCV, setIsProcessingCV] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'range' ? parseInt(value, 10) : value
     }));
   };
 
@@ -40,10 +31,10 @@ const CoverLetterForm = ({ onGenerate, isGenerating }) => {
 
     try {
       console.log('CV uploaded:', file.name);
-      alert('CV parsing will be implemented by the backend API. The form will be auto-filled with extracted information.');
+      // CV will be sent to backend API when form is submitted
     } catch (error) {
       console.error('Error processing CV:', error);
-      alert('Failed to process CV. Please fill in the form manually.');
+      alert('Failed to process CV. Please try again.');
     } finally {
       setIsProcessingCV(false);
     }
@@ -56,22 +47,21 @@ const CoverLetterForm = ({ onGenerate, isGenerating }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onGenerate(formData);
+    // Include the uploaded CV file in the form data
+    onGenerate({
+      ...formData,
+      uploadedCV: uploadedCV, // Include the file object
+    });
   };
 
   const handleReset = () => {
     setFormData({
-      fullName: '',
-      email: '',
-      phone: '',
-      address: '',
-      jobTitle: '',
-      companyName: '',
-      hiringManager: '',
-      skills: '',
-      experience: '',
-      jobDescription: '',
+      jobRequirements: '',
+      humanScale: 7,
+      optionalInfo: '',
     });
+    setUploadedCV(null);
+    document.getElementById('cvUpload').value = '';
   };
 
   return (
@@ -85,8 +75,8 @@ const CoverLetterForm = ({ onGenerate, isGenerating }) => {
         <form className="cover-letter-form" onSubmit={handleSubmit}>
           {/* CV Upload Section */}
           <div className="form-section-group cv-upload-section">
-            <h3 className="section-title">Quick Start - Upload Your CV</h3>
-            <p className="section-description">Upload your CV to automatically fill in your details</p>
+            <h3 className="section-title">Upload Your CV (Optional)</h3>
+            <p className="section-description">Upload your CV to help personalize your cover letter</p>
             
             <div className="cv-upload-container">
               <input
@@ -123,142 +113,112 @@ const CoverLetterForm = ({ onGenerate, isGenerating }) => {
             </div>
           </div>
 
-          {/* Personal Information Section */}
+          {/* Job Requirements Section */}
           <div className="form-section-group">
-            <h3 className="section-title">Personal Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="fullName">Full Name *</label>
-                <input
-                  type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  placeholder="Full name"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email Address *</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="your.name@example.com"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+44 123 456 7890"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="address">Address</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  placeholder="City, Country"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="form-section-group">
-            <h3 className="section-title">Job Details</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="jobTitle">Job Title *</label>
-                <input
-                  type="text"
-                  id="jobTitle"
-                  name="jobTitle"
-                  value={formData.jobTitle}
-                  onChange={handleChange}
-                  placeholder="Software Engineer"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="companyName">Company Name *</label>
-                <input
-                  type="text"
-                  id="companyName"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  placeholder="Company123"
-                  required
-                />
-              </div>
-
-              <div className="form-group full-width">
-                <label htmlFor="hiringManager">Hiring Manager Name (if known)</label>
-                <input
-                  type="text"
-                  id="hiringManager"
-                  name="hiringManager"
-                  value={formData.hiringManager}
-                  onChange={handleChange}
-                  placeholder="Jane Smith"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="form-section-group">
-            <h3 className="section-title">Additional Context</h3>
-            
+            <h3 className="section-title">Job Requirements</h3>
+            <p className="section-description">
+              Paste the job description and requirements here
+            </p>
             <div className="form-group">
-              <label htmlFor="skills">Key Skills *</label>
+              <label htmlFor="jobRequirements">Job Description & Requirements *</label>
               <textarea
-                id="skills"
-                name="skills"
-                value={formData.skills}
+                id="jobRequirements"
+                name="jobRequirements"
+                value={formData.jobRequirements}
                 onChange={handleChange}
-                placeholder="List your relevant skills (e.g., JavaScript, React, Node.js, Problem Solving)"
-                rows="3"
+                placeholder="Paste the complete job description, requirements, and any relevant details here..."
+                rows="8"
                 required
               />
             </div>
+          </div>
 
+          {/* Optional Information Section */}
+          <div className="form-section-group">
+            <h3 className="section-title">Additional Information (Optional)</h3>
+            <p className="section-description">
+              Add any extra context that might help personalize your cover letter
+            </p>
             <div className="form-group">
-              <label htmlFor="experience">Relevant Experience</label>
+              <label htmlFor="optionalInfo">Additional Information</label>
               <textarea
-                id="experience"
-                name="experience"
-                value={formData.experience}
+                id="optionalInfo"
+                name="optionalInfo"
+                value={formData.optionalInfo}
                 onChange={handleChange}
-                placeholder="Briefly describe your relevant work experience and achievements"
+                placeholder="E.g., specific achievements, why you're interested in this role, relevant projects, etc."
                 rows="4"
               />
             </div>
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="jobDescription">Job Description *</label>
-              <textarea
-                id="jobDescription"
-                name="jobDescription"
-                value={formData.jobDescription}
-                onChange={handleChange}
-                placeholder="Paste the job description here to help tailor your cover letter"
-                rows="5"
-              />
+          {/* Writing Style Section */}
+          <div className="form-section-group writing-style-section">
+            <h3 className="section-title">Writing Style</h3>
+            <p className="section-description">
+              Adjust the tone to match your preferred writing style
+            </p>
+            
+            <div className="style-slider-container">
+              <div className="style-slider-labels">
+                <span className="style-label">
+                  <i className="fas fa-robot"></i>
+                  AI-Assisted & Formal
+                </span>
+                <span className="style-label">
+                  <i className="fas fa-hand-sparkles"></i>
+                  Natural & Conversational
+                </span>
+              </div>
+              
+              <div className="style-slider-wrapper">
+                <div className="style-slider-track">
+                  <div 
+                    className="style-slider-fill-left"
+                    style={{ width: `${((formData.humanScale - 1) / 9) * 100}%` }}
+                  ></div>
+                  <div 
+                    className="style-slider-fill-right"
+                    style={{ width: `${((10 - formData.humanScale) / 9) * 100}%`, left: `${((formData.humanScale - 1) / 9) * 100}%` }}
+                  ></div>
+                </div>
+                <input
+                  type="range"
+                  id="humanScale"
+                  name="humanScale"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value={formData.humanScale}
+                  onChange={handleChange}
+                  className="style-slider"
+                />
+                <div 
+                  className="style-slider-value"
+                  style={{ left: `${((formData.humanScale - 1) / 9) * 100}%` }}
+                >
+                  {formData.humanScale}/10
+                </div>
+              </div>
+              
+              <div className="style-description">
+                {formData.humanScale >= 8 ? (
+                  <span className="style-hint">
+                    <i className="fas fa-hand-sparkles"></i>
+                    Very natural, conversational, human-sounding tone
+                  </span>
+                ) : formData.humanScale >= 4 ? (
+                  <span className="style-hint">
+                    <i className="fas fa-balance-scale"></i>
+                    Balanced professional and conversational
+                  </span>
+                ) : (
+                  <span className="style-hint">
+                    <i className="fas fa-robot"></i>
+                    More polished, professional, AI-assisted tone
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

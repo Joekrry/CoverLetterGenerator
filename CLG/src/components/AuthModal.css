@@ -135,10 +135,26 @@
   margin-top: 0.5rem;
   transition: background 0.2s, color 0.2s, border 0.2s;
 }
-.auth-form-login-btn:hover {
+.auth-form-login-btn:hover:not(:disabled) {
   background: #FF5030;
   color: #fff;
   border: 2px solid #FF5030;
+}
+
+.auth-form-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 @media (max-width: 600px) {
