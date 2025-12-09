@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Header from './components/Header';
+import AuthModal from './components/AuthModal';
 import Hero from './components/Hero';
 import Features from './components/Features';
 import CoverLetterForm from './components/CoverLetterForm';
@@ -8,18 +9,15 @@ import Footer from './components/Footer';
 import { useCoverLetter } from './hooks/useCoverLetter';
 import './App.css';
 
+
 function App() {
   const { coverLetter, createCoverLetter } = useCoverLetter();
   const [showPreview, setShowPreview] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleGenerate = (formData) => {
-    // Backend integration point: Call your API here to generate the cover letter
-    // Example: await fetch('/api/generate-cover-letter', { method: 'POST', body: JSON.stringify(formData) })
-    
     createCoverLetter(formData);
     setShowPreview(true);
-    
-    // Scroll to preview section
     setTimeout(() => {
       const previewSection = document.querySelector('.preview-section');
       if (previewSection) {
@@ -28,9 +26,12 @@ function App() {
     }, 100);
   };
 
+  const handleLoginClick = () => setShowAuthModal(true);
+  const handleCloseAuthModal = () => setShowAuthModal(false);
+
   return (
     <div className="app">
-      <Header />
+      <Header onLoginClick={handleLoginClick} />
       <main>
         <Hero />
         <Features />
@@ -40,6 +41,7 @@ function App() {
         )}
       </main>
       <Footer />
+      <AuthModal isOpen={showAuthModal} onClose={handleCloseAuthModal} />
     </div>
   );
 }

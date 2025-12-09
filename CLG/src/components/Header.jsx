@@ -1,6 +1,7 @@
 import './Header.css';
 
-const Header = () => {
+
+const Header = ({ onLoginClick }) => {
   return (
     <header className="header">
       <div className="header-container">
@@ -9,7 +10,14 @@ const Header = () => {
         </div>
         <nav className="nav">
           <ul className="nav-list">
-            <li><a href="#login">Login</a></li>
+            <li>
+              <button
+                className="login-btn"
+                onClick={onLoginClick}
+              >
+                Login
+              </button>
+            </li>
           </ul>
         </nav>
       </div>

@@ -1,3 +1,19 @@
+/* Login button in nav bar */
+.login-btn {
+  background-color: #FF5030;
+  color: #F5F5F3;
+  border: none;
+  border-radius: 2px;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.login-btn:hover {
+  background-color: #cc4026;
+  color: #F5F5F3;
+}
 .header {
   background-color: #F5F5F3;
   box-shadow: 0 2px 8px rgba(18, 18, 18, 0.05);
