@@ -94,7 +94,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
-            placeholder="your.email@example.com"
+            placeholder="test@example.com"
           />
           <label htmlFor="auth-password" className="auth-label">Password</label>
           <div className="auth-password-wrapper">
@@ -107,7 +107,7 @@ const AuthModal = ({ isOpen, onClose }) => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               minLength={isRegister ? 8 : undefined}
-              placeholder={isRegister ? "Minimum 8 characters" : "Enter your password"}
+              placeholder={isRegister ? "Minimum 8 characters" : "password123"}
             />
             <span
               className="auth-password-toggle"
