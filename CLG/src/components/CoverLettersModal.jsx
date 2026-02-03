@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import './CoverLettersModal.css';
-import { getCoverLetters, downloadPDF, getCoverLetterById } from '../services/coverLetterService';
+import { getCoverLetters, downloadPDF, getCoverLetterById, deleteCoverLetter } from '../services/coverLetterService';
 import { authService } from '../services/authService';
 
 const CoverLettersModal = ({ isOpen, onClose, onViewLetter }) => {
@@ -20,6 +20,30 @@ const CoverLettersModal = ({ isOpen, onClose, onViewLetter }) => {
     enabled: isOpen,
     staleTime: 30000,
   });
+
+  // Delete cover letter mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (coverLetterId) => {
+      const accessToken = authService.getAccessToken();
+      if (!accessToken) throw new Error('Not authenticated');
+      return await deleteCoverLetter(coverLetterId, accessToken);
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handleDeleteLetter = async (coverLetterId, e) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this cover letter? This action cannot be undone.')) {
+      try {
+        await deleteMutation.mutateAsync(coverLetterId);
+      } catch (err) {
+        console.error('Delete error:', err);
+        alert(err.message || 'Failed to delete cover letter. Please try again.');
+      }
+    }
+  };
 
   const handleDownloadPDF = async (coverLetterId, e) => {
     e.stopPropagation();
@@ -166,6 +190,14 @@ const CoverLettersModal = ({ isOpen, onClose, onViewLetter }) => {
                             title={letter.pdf_status === 'completed' ? 'Download PDF' : 'PDF not ready'}
                           >
                             <i className="fas fa-download"></i> PDF
+                          </button>
+                          <button
+                            className="card-action-btn delete"
+                            onClick={(e) => handleDeleteLetter(letter.id, e)}
+                            disabled={deleteMutation.isPending}
+                            title="Delete cover letter"
+                          >
+                            <i className="fas fa-trash"></i>
                           </button>
                         </div>
                       </div>

@@ -273,3 +273,25 @@ export const downloadPDF = async (coverLetterId, accessToken) => {
   // Open in new tab (Cloudinary URL)
   window.open(finalUrl, '_blank');
 };
+
+/**
+ * Delete a cover letter
+ * @param {string} coverLetterId - UUID of the cover letter
+ * @param {string} accessToken - Bearer token for authentication
+ * @returns {Promise<{message: string}>}
+ */
+export const deleteCoverLetter = async (coverLetterId, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/cover-letters/${coverLetterId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Failed to delete cover letter' }));
+    throw new Error(error.error || `Request failed with status ${response.status}`);
+  }
+
+  return await response.json();
+};
