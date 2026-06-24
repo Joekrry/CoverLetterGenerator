@@ -67,11 +67,19 @@ export const AuthProvider = ({ children }) => {
     },
   });
 
+  const bypassLogin = async () => {
+    await loginMutation.mutateAsync({
+	    email: 'test@example.com',
+      password: 'password123',
+    });
+  };
+
   const value = {
     user,
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
     logout,
+    bypassLogin,
     isLoggingIn: loginMutation.isPending,
     isRegistering: registerMutation.isPending,
     loginError: loginMutation.error,
